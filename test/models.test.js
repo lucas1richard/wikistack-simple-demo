@@ -34,11 +34,38 @@ describe('Models', ()=> {
       beforeEach((done)=> {
         db.models.User.findAll()
           .then( _users => users = _users)
-          .then( ()=> done())  
+          .then( ()=> done())
           .catch( err=> done(err));
       });
       it('there are two users', ()=> {
         expect(users.length).to.equal(2);
+      });
+    });
+  });
+
+  describe('Create story', () => {
+    let story;
+    beforeEach((done) => {
+      db.models.Story.createStory('bob', 'story title', 'story contents', ['cool', 'story', 'bro'])
+      .then(fdstory => {
+        story = fdstory;
+        done();
+      })
+      .catch(done);
+    });
+
+    it('creates a story', () => {
+      expect(story.title).to.equal('story title');
+      expect(story.tags).to.contain('cool');
+    });
+  });
+
+  describe('Does not allow user name duplicates', () => {
+    it('fails on duplicate', (done) => {
+      let user = db.models.User.build({ name: 'prof' });
+      user.validate().then((err) => {
+        console.log(err);
+        done();
       });
     });
   });
